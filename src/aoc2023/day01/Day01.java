@@ -2,10 +2,12 @@ package aoc2023.day01;
 
 import aoc2023.Day;
 
-public class Day01 extends Day {
+import java.util.stream.Stream;
+
+public class Day01 extends Day<Integer, Integer> {
 
     public Day01() {
-        super("src/aoc_2022/Day01/day01_input.txt");
+        super("src/aoc2023/Day01/day01_input.txt");
     }
 
     public Day01(String inputFilePath) {
@@ -13,12 +15,32 @@ public class Day01 extends Day {
     }
 
     @Override
-    public Object partOne() {
-        return null;
+    public Integer partOne() {
+
+        Stream<String> lines = getLinesStream();
+
+        return lines.map(this::getNumberFromLine).reduce(0, Integer::sum);
     }
 
     @Override
-    public Object partTwo() {
+    public Integer partTwo() {
         return null;
     }
+
+    Integer getNumberFromLine(String line) {
+        Character first = null;
+        Character last = null;
+
+        for (char ch : line.toCharArray()) {
+            if (Character.isDigit(ch)) {
+                if (first == null) {
+                    first = ch;
+                }
+                last = ch;
+            }
+        }
+
+        return Integer.parseInt("" + first + last);
+    }
+
 }
