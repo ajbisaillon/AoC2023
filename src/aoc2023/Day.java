@@ -17,7 +17,7 @@ public abstract class Day<T, V> {
 
     public void solve() {
         System.out.printf("-- %s --%n", this.getClass().getSimpleName());
-        System.out.printf("Part One Solution: %s%n", partOne());
+//        System.out.printf("Part One Solution: %s%n", partOne());
         System.out.printf("Part Two Solution: %s%n", partTwo());
         System.out.println();
     }
