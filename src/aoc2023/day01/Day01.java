@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class Day01 extends Day<Integer, Integer> {
+public class Day01 extends Day {
 
     Map<String, String> numberMap = Map.of(
         "one", "1",
@@ -25,19 +25,13 @@ public class Day01 extends Day<Integer, Integer> {
         super("src/aoc2023/Day01/input.txt");
     }
 
-    public Day01(String inputFilePath) {
-        super(inputFilePath);
-    }
-
     @Override
-    public Integer partOne() {
-        Stream<String> lines = getLinesStream();
+    public Object partOne(Stream<String> lines) {
         return lines.map(this::getDigitsFromLine).reduce(0, Integer::sum);
     }
 
     @Override
-    public Integer partTwo() {
-        Stream<String> lines = getLinesStream();
+    public Object partTwo(Stream<String> lines) {
         return lines.map(this::getNumbersFromLine).reduce(0, Integer::sum);
     }
 

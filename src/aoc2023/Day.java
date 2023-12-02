@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.stream.Stream;
 
-public abstract class Day<T, V> {
+public abstract class Day {
 
     final String inputFilePath;
     public final File inputFile;
@@ -17,14 +17,14 @@ public abstract class Day<T, V> {
 
     public void solve() {
         System.out.printf("-- %s --%n", this.getClass().getSimpleName());
-        System.out.printf("Part One Solution: %s%n", partOne());
-        System.out.printf("Part Two Solution: %s%n", partTwo());
+        System.out.printf("Part One Solution: %s%n", partOne(getLinesStream()));
+        System.out.printf("Part Two Solution: %s%n", partTwo(getLinesStream()));
         System.out.println();
     }
 
-    abstract public T partOne();
+    abstract public Object partOne(Stream<String> lines);
 
-    abstract public V partTwo();
+    abstract public Object partTwo(Stream<String> lines);
 
     public Stream<String> getLinesStream() {
         try {
