@@ -23,7 +23,7 @@ public class Day01 extends Day<Integer, Integer> {
     }};
 
     public Day01() {
-        super("src/aoc2023/Day01/day01_input.txt");
+        super("src/aoc2023/Day01/input.txt");
     }
 
     public Day01(String inputFilePath) {
@@ -57,51 +57,48 @@ public class Day01 extends Day<Integer, Integer> {
     }
 
     Integer getNumbersFromLine(String line) {
-        System.out.println(line);
-        String first = null;
-        String last = null;
-        StringBuilder buffer = new StringBuilder();
-        for (char ch : line.toCharArray()) {
-            if (Character.isDigit(ch)) {
-                if (first == null) {
-                    first = String.valueOf(ch);
-                }
-                last = String.valueOf(ch);
-                buffer = new StringBuilder();
-            } else {
-                buffer.append(ch);
-                String finalBuffer = buffer.toString();
-                String number = findNumberWord(finalBuffer);
-                if (number != null) {
-                    String digit = numberMap.get(number);
-                    if (first == null) {
-                        first = digit;
-                    }
-                    last = digit;
-//                    buffer = new StringBuilder();
-                }
-            }
-        }
-
-        System.out.println(first + last);
-        return Integer.parseInt(first + last);
+        return Integer.parseInt(getFirstNumberFromLine(line) + getLastNumberFromLine(line));
     }
 
-    String findNumberWord(String buffer) {
-        CharacterIterator it = new StringCharacterIterator(buffer);
-        StringBuilder substring = new StringBuilder();
+    String getFirstNumberFromLine(String line) {
+        CharacterIterator it = new StringCharacterIterator(line);
+        StringBuilder buffer = new StringBuilder();
+        char ch = it.first();
+        while (ch != CharacterIterator.DONE) {
+            if (Character.isDigit(ch)) {
+                return String.valueOf(ch);
+            }
+            buffer.append(ch);
+            Optional<String> result = findNumberWord(buffer);
+            if (result.isPresent()) {
+                return numberMap.get(result.get());
+            }
+            ch = it.next();
+        }
+        return null;
+    }
+
+    String getLastNumberFromLine(String line) {
+        CharacterIterator it = new StringCharacterIterator(line);
+        StringBuilder buffer = new StringBuilder();
         char ch = it.last();
         while (ch != CharacterIterator.DONE) {
-            substring.insert(0, ch);
-            String finalSubstring = substring.toString();
-            Optional<String> number = numberMap.keySet().stream()
-                    .filter(finalSubstring::contains).findFirst();
-            if (number.isPresent()) {
-                return number.get();
+            if (Character.isDigit(ch)) {
+                return String.valueOf(ch);
+            }
+            buffer.insert(0, ch);
+            Optional<String> result = findNumberWord(buffer);
+            if (result.isPresent()) {
+                return numberMap.get(result.get());
             }
             ch = it.previous();
         }
         return null;
+    }
+
+    Optional<String> findNumberWord(StringBuilder buffer) {
+        String finalBuffer = buffer.toString();
+        return numberMap.keySet().stream().filter(finalBuffer::contains).findFirst();
     }
 
 }
