@@ -4,7 +4,6 @@ import aoc2023.Cell;
 import aoc2023.Day;
 import aoc2023.Grid;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -27,8 +26,8 @@ public class Day03 extends Day {
             StringBuilder numberBuffer = new StringBuilder();
             boolean symbolFound = false;
             for (int j = 0; j < grid.getNumberOfColumns(); j++) {
-                final Cell cell = new Cell(i, j);
-                String cellContent = grid.getCell(cell);
+                Cell cell = grid.getCell(i, j);
+                String cellContent = cell.getValue();
 
                 if (Character.isDigit(cellContent.charAt(0))) {
                     numberBuffer.append(cellContent);
@@ -61,6 +60,21 @@ public class Day03 extends Day {
 
     @Override
     public Object partTwo(Stream<String> lines) {
+        final Grid grid = new Grid();
+        lines.forEach(line -> grid.addRow(Arrays.stream(line.split("")).toList()));
+        for (int i = 0; i < grid.getNumberOfRows(); i++) {
+            for (int j = 0; j < grid.getNumberOfColumns(); j++) {
+                final Cell cell = grid.getCell(i, j);
+                final String cellContent = cell.getValue();
+                if (!cellContent.equals("*")) {
+                    continue;
+                }
+
+                List<Cell> before = grid.getRow(i - 1);
+
+            }
+        }
+
         return null;
     }
 }

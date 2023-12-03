@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class Grid {
 
-    final List<List<String>> grid;
+    final List<List<Cell>> grid;
 
     public Grid() {
         grid = new ArrayList<>();
@@ -29,12 +29,23 @@ public class Grid {
     }
 
     public void addRow(List<String> row) {
-        grid.add(row);
+        int nextRow = getNumberOfRows();
+        List<Cell> cells = new ArrayList<>();
+        for (int j = 0; j < row.size(); j++) {
+            cells.add(new Cell(nextRow, j, row.get(j)));
+        }
+
+        grid.add(cells);
+
     }
 
-    public String getCell(Cell cell) {
+    public List<Cell> getRow(int index) {
+        return grid.get(index);
+    }
+
+    public Cell getCell(int row, int col) {
         // TODO: Constrain to grid bounds
-        return grid.get(cell.i).get(cell.j);
+        return grid.get(row).get(col);
     }
 
     public Set<String> getNeighbors(Cell cell) {
@@ -47,7 +58,7 @@ public class Grid {
                 ) {
                     continue;
                 }
-                neighbors.add(grid.get(i).get(j));
+                neighbors.add(grid.get(i).get(j).mValue);
 
             }
         }
@@ -56,8 +67,8 @@ public class Grid {
     }
 
     public void print() {
-        for (List<String> row : grid) {
-            for (String cell : row) {
+        for (List<Cell> row : grid) {
+            for (Cell cell : row) {
                 System.out.print(cell + " ");
             }
             System.out.println();
