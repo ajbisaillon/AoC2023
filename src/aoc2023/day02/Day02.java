@@ -65,6 +65,7 @@ public class Day02 extends Day {
         return gameId;
     }
 
+    // TODO optimize
     Integer calculateFewestCubes(String line) {
         int minRed = 0;
         int minGreen = 0;

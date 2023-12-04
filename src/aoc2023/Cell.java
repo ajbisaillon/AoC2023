@@ -1,8 +1,8 @@
 package aoc2023;
 
 public class Cell {
-    final int i;
-    final int j;
+    final public int i;
+    final public int j;
 
     final String mValue;
 
@@ -18,6 +18,6 @@ public class Cell {
 
     @Override
     public String toString() {
-        return mValue;
+        return mValue + "@(" + i + "," + j + ")";
     }
 }
