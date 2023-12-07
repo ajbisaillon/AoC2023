@@ -20,7 +20,6 @@ public class Day05 extends Day {
                         .split(" "))
                 .map(Long::parseLong).collect(Collectors.toList());
 
-        Map<Long, Long> currentMap = new HashMap<>();
         List<Long> currentValues = seeds;
         Set<Integer> processed = new HashSet<>();
         for (String line : allLines.stream().skip(1).toList()) {
@@ -51,7 +50,45 @@ public class Day05 extends Day {
 
     @Override
     public Object partTwo(Stream<String> lines) {
-        return null;
+        List<String> allLines = lines.toList();
+        List<Long> seeds = Arrays.stream(allLines.get(0)
+                        .split(":")[1].trim()
+                        .split(" "))
+                .map(Long::parseLong).toList();
+        List<String> allMapLines = allLines.stream().skip(1).toList();
+        long minLocationValue = Long.MAX_VALUE;
+        for (int i = 0; i < seeds.size(); i = i + 2) {
+            Long seedStart = seeds.get(i);
+            Long seedRange = seeds.get(i + 1);
+
+            for (int j = 0; j < seedRange; j++) {
+                long current = seedStart + j;
+
+
+                boolean processed = false;
+                for (String line : allMapLines) {
+                    if (line.contains("map")) {
+                        processed = false;
+                        continue;
+                    }
+
+                    if (line.isBlank() || processed) continue;
+
+
+                    List<Long> numbers = Arrays.stream(line.trim().split(" ")).map(Long::parseLong).toList();
+                    GardenMap gardenMap = new GardenMap(numbers.get(0), numbers.get(1), numbers.get(2));
+                    if (current >= gardenMap.sourceStart && current < (gardenMap.sourceStart + gardenMap.range)) {
+                        current = gardenMap.destinationStart + (current - gardenMap.sourceStart);
+                        processed = true;
+                    }
+                }
+                if (current < minLocationValue) {
+                    minLocationValue = current;
+                }
+            }
+        }
+
+        return minLocationValue;
     }
 
     static class GardenMap {
