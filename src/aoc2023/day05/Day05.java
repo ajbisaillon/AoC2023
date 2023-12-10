@@ -56,39 +56,47 @@ public class Day05 extends Day {
                         .split(" "))
                 .map(Long::parseLong).toList();
         List<String> allMapLines = allLines.stream().skip(1).toList();
-        long minLocationValue = Long.MAX_VALUE;
+
+        List<Interval> seedIntervals = new ArrayList<>();
         for (int i = 0; i < seeds.size(); i = i + 2) {
             Long seedStart = seeds.get(i);
             Long seedRange = seeds.get(i + 1);
-
-            for (int j = 0; j < seedRange; j++) {
-                long current = seedStart + j;
-
-
-                boolean processed = false;
-                for (String line : allMapLines) {
-                    if (line.contains("map")) {
-                        processed = false;
-                        continue;
-                    }
-
-                    if (line.isBlank() || processed) continue;
+            seedIntervals.add(new Interval(seedStart, seedStart + seedRange - 1));
+        }
+        seedIntervals.sort(Comparator.comparingLong((Interval i) -> i.start));
 
 
-                    List<Long> numbers = Arrays.stream(line.trim().split(" ")).map(Long::parseLong).toList();
-                    GardenMap gardenMap = new GardenMap(numbers.get(0), numbers.get(1), numbers.get(2));
-                    if (current >= gardenMap.sourceStart && current < (gardenMap.sourceStart + gardenMap.range)) {
-                        current = gardenMap.destinationStart + (current - gardenMap.sourceStart);
-                        processed = true;
-                    }
+        for (long j = 0L; j < Long.MAX_VALUE; j++) {
+            long current = j;
+//            if (j % 1000000 == 0) System.out.println(j);
+
+            boolean processed = false;
+            for (int k = allMapLines.size() - 1; k > 0; k--) {
+                String line = allMapLines.get(k);
+
+                if (line.contains("map")) {
+                    processed = false;
+                    continue;
                 }
-                if (current < minLocationValue) {
-                    minLocationValue = current;
+
+                if (line.isBlank() || processed) continue;
+
+
+                List<Long> numbers = Arrays.stream(line.trim().split(" ")).map(Long::parseLong).toList();
+                GardenMap gardenMap = new GardenMap(numbers.get(1), numbers.get(0), numbers.get(2));
+                if (current >= gardenMap.sourceStart && current < (gardenMap.sourceStart + gardenMap.range)) {
+                    current = gardenMap.destinationStart + (current - gardenMap.sourceStart);
+                    processed = true;
+                }
+            }
+
+            for (Interval seedInterval : seedIntervals) {
+                if (current >= seedInterval.start && current <= seedInterval.end) {
+                    return j;
                 }
             }
         }
-
-        return minLocationValue;
+        return null;
     }
 
     static class GardenMap {
@@ -109,6 +117,39 @@ public class Day05 extends Day {
                     ", sourceStart=" + sourceStart +
                     ", range=" + range +
                     '}';
+        }
+    }
+
+    static class Interval implements Comparable<Interval> {
+        Long start;
+        Long end;
+
+        public Interval(long start, long end) {
+            this.start = start;
+            this.end = end;
+        }
+
+        @Override
+        public int compareTo(Interval o) {
+            return this.start.compareTo(o.start);
+        }
+
+        @Override
+        public String toString() {
+            return "(" + start + "," + end + ")";
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Interval interval = (Interval) o;
+            return Objects.equals(start, interval.start) && Objects.equals(end, interval.end);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(start, end);
         }
     }
 
