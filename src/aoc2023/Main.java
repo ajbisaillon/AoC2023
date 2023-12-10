@@ -7,6 +7,7 @@ import aoc2023.day04.Day04;
 import aoc2023.day05.Day05;
 import aoc2023.day06.Day06;
 import aoc2023.day07.Day07;
+import aoc2023.day08.Day08;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +22,8 @@ public class Main {
 //                new Day04(),
 //                new Day05(),
 //                new Day06(),
-                new Day07()
+//                new Day07(),
+                new Day08()
         )).forEach(Day::solve);
     }
 }
