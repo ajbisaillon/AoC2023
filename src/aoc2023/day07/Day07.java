@@ -3,7 +3,6 @@ package aoc2023.day07;
 import aoc2023.Day;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Day07 extends Day {
@@ -31,15 +30,28 @@ public class Day07 extends Day {
 
     @Override
     public Object partTwo(Stream<String> lines) {
-        return null;
+        List<CardHand> hands = lines.map(line -> {
+            String[] parts = line.split(" ");
+            List<Card> hand = Arrays.stream(parts[0].split("")).map(Card::fromString).toList();
+            int bid = Integer.parseInt(parts[1]);
+
+            return new CardHand(bid, hand);
+        }).sorted().toList();
+
+        int totalWinnings = 0;
+        for (int i = 0; i < hands.size(); i++) {
+            totalWinnings += hands.get(i).bid * (i + 1);
+        }
+
+        return totalWinnings;
     }
 
     enum Card {
-        ACE(14),
-        KING(13),
-        QUEEN(12),
-        JACK(11),
-        TEN(10),
+        A(14),
+        K(13),
+        Q(12),
+        J(1),
+        T(10),
         NINE(9),
         EIGHT(8),
         SEVEN(7),
@@ -55,35 +67,45 @@ public class Day07 extends Day {
             this.value = value;
         }
 
-        static Card fromString(String string){
+        static Card fromString(String string) {
             switch (string) {
                 case "A" -> {
-                    return ACE;
+                    return A;
                 }
                 case "K" -> {
-                    return KING;
+                    return K;
                 }
-                case "Q" ->  {
-                    return QUEEN;
-                } case "J" -> {
-                    return JACK;
-                } case "T"-> {
-                    return TEN;
-                } case "9"-> {
+                case "Q" -> {
+                    return Q;
+                }
+                case "J" -> {
+                    return J;
+                }
+                case "T" -> {
+                    return T;
+                }
+                case "9" -> {
                     return NINE;
-                } case "8"-> {
+                }
+                case "8" -> {
                     return EIGHT;
-                } case "7"-> {
+                }
+                case "7" -> {
                     return SEVEN;
-                } case "6"-> {
+                }
+                case "6" -> {
                     return SIX;
-                } case "5"-> {
+                }
+                case "5" -> {
                     return FIVE;
-                } case "4"-> {
+                }
+                case "4" -> {
                     return FOUR;
-                } case "3"-> {
+                }
+                case "3" -> {
                     return THREE;
-                } case "2"-> {
+                }
+                case "2" -> {
                     return TWO;
                 }
             }
@@ -140,20 +162,54 @@ public class Day07 extends Day {
 
             List<Integer> values = counts.values().stream().toList();
 
+            HandType handType;
             if (values.contains(5)) {
-                return HandType.FIVE_OF_A_KIND;
+                handType = HandType.FIVE_OF_A_KIND;
             } else if (values.contains(4)) {
-                return HandType.FOUR_OF_A_KIND;
+                handType = HandType.FOUR_OF_A_KIND;
             } else if (values.size() == 2 && values.contains(3) && values.contains(2)) {
-                return HandType.FULL_HOUSE;
-            } else if (values.size() == 3 &&  values.contains(3)) {
-                return HandType.THREE_OF_A_KIND;
+                handType = HandType.FULL_HOUSE;
+            } else if (values.size() == 3 && values.contains(3)) {
+                handType = HandType.THREE_OF_A_KIND;
             } else if (values.size() == 3 && values.contains(2)) {
-                return HandType.TWO_PAIR;
+                handType = HandType.TWO_PAIR;
             } else if (values.size() == 4 && values.contains(2)) {
-                return HandType.ONE_PAIR;
+                handType = HandType.ONE_PAIR;
             } else {
-              return HandType.HIGH_CARD;
+                handType = HandType.HIGH_CARD;
+            }
+
+            if (counts.get(Card.J) != null) {
+                return upgradeType(handType, counts.get(Card.J));
+            }
+
+            return handType;
+        }
+
+        private HandType upgradeType(HandType type, int numJokers) {
+            switch (type) {
+                case HIGH_CARD -> {
+                    return HandType.ONE_PAIR;
+                }
+                case ONE_PAIR -> {
+                        return HandType.THREE_OF_A_KIND;
+                }
+                case TWO_PAIR -> {
+                    if (numJokers == 1) {
+                        return HandType.FULL_HOUSE;
+                    }
+
+                    return HandType.FOUR_OF_A_KIND;
+                }
+                case THREE_OF_A_KIND -> {
+                    return HandType.FOUR_OF_A_KIND;
+                }
+                case FULL_HOUSE, FOUR_OF_A_KIND, FIVE_OF_A_KIND -> {
+                    return HandType.FIVE_OF_A_KIND;
+                }
+                default -> {
+                    return type;
+                }
             }
         }
 
