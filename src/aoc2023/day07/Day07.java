@@ -14,10 +14,10 @@ public class Day07 extends Day {
     public Object partOne(Stream<String> lines) {
         List<CardHand> hands = lines.map(line -> {
             String[] parts = line.split(" ");
-            List<Card> hand = Arrays.stream(parts[0].split("")).map(Card::fromString).toList();
+            List<Card> hand = Arrays.stream(parts[0].split("")).map(label -> Card.fromString(label, Part.ONE)).toList();
             int bid = Integer.parseInt(parts[1]);
 
-            return new CardHand(bid, hand);
+            return new CardHand(Part.ONE, bid, hand);
         }).sorted().toList();
 
         int totalWinnings = 0;
@@ -32,10 +32,10 @@ public class Day07 extends Day {
     public Object partTwo(Stream<String> lines) {
         List<CardHand> hands = lines.map(line -> {
             String[] parts = line.split(" ");
-            List<Card> hand = Arrays.stream(parts[0].split("")).map(Card::fromString).toList();
+            List<Card> hand = Arrays.stream(parts[0].split("")).map(label -> Card.fromString(label, Part.TWO)).toList();
             int bid = Integer.parseInt(parts[1]);
 
-            return new CardHand(bid, hand);
+            return new CardHand(Part.TWO, bid, hand);
         }).sorted().toList();
 
         int totalWinnings = 0;
@@ -44,6 +44,11 @@ public class Day07 extends Day {
         }
 
         return totalWinnings;
+    }
+
+    enum Part {
+        ONE,
+        TWO,
     }
 
     enum Card {
@@ -67,7 +72,7 @@ public class Day07 extends Day {
             this.value = value;
         }
 
-        static Card fromString(String string) {
+        static Card fromString(String string, Part part) {
             switch (string) {
                 case "A" -> {
                     return A;
@@ -79,6 +84,10 @@ public class Day07 extends Day {
                     return Q;
                 }
                 case "J" -> {
+                    switch (part) {
+                        case ONE -> J.value = 11;
+                        case TWO -> J.value = 1;
+                    }
                     return J;
                 }
                 case "T" -> {
@@ -135,12 +144,15 @@ public class Day07 extends Day {
     }
 
     static class CardHand implements Comparable<CardHand> {
+        private final Part part;
+
         private final int bid;
 
         private final List<Card> cards;
 
 
-        CardHand(int bid, List<Card> cards) {
+        CardHand(Part part, int bid, List<Card> cards) {
+            this.part = part;
             this.bid = bid;
             this.cards = cards;
         }
@@ -179,7 +191,7 @@ public class Day07 extends Day {
                 handType = HandType.HIGH_CARD;
             }
 
-            if (counts.get(Card.J) != null) {
+            if (part == Part.TWO &&  counts.get(Card.J) != null) {
                 return upgradeType(handType, counts.get(Card.J));
             }
 
