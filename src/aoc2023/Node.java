@@ -11,10 +11,11 @@ public class Node {
 
     @Override
     public String toString() {
-        return "Node{" +
-                "value='" + value + '\'' +
-                ", leftPointer=" + leftPointer +
-                ", rightPointer=" + rightPointer +
-                '}';
+//        return "Node{" +
+//                "value='" + value + '\'' +
+//                ", leftPointer=" + leftPointer +
+//                ", rightPointer=" + rightPointer +
+//                '}';
+        return "Node{" + value + "}";
     }
 }
