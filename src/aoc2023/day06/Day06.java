@@ -58,7 +58,47 @@ public class Day06 extends Day {
 
     @Override
     public Object partTwo(Stream<String> lines) {
-        return null;
+        final long startTime = System.currentTimeMillis();
+
+        // total possibilities - ways to lose = ways to win
+        // (more ways to win than lose in this case)
+        long totalWaysToWin = 0;
+        long totalWaysToLose = 0;
+
+        List<List<String>> raceNumbers = lines.map(line -> {
+            String[] parts = line.split(":");
+            return Arrays.stream(parts[1].split(" ")).toList();
+        }).toList();
+
+        long time = Long.parseLong(raceNumbers.get(0)
+                .stream().filter(timeDigits -> !timeDigits.isBlank())
+                .reduce("", (accumulated, current) -> accumulated + current)
+        );
+        long distance = Long.parseLong(raceNumbers.get(1)
+                .stream().filter(distanceDigits -> !distanceDigits.isBlank())
+                .reduce("", (accumulated, current) -> accumulated + current)
+        );
+
+        long ms = 0;
+        while ((time - ms) * ms <= distance) {
+            totalWaysToLose++;
+            ms++;
+        }
+        ms = time;
+        while ((time - ms) * ms <= distance) {
+            totalWaysToLose++;
+            ms--;
+        }
+
+//        for (long i = 1; i < time; i++) {
+//            if ((time - i) * i > distance) {
+//                totalWaysToWin++;
+//            }
+//        }
+
+        final long endTime = System.currentTimeMillis();
+        System.out.println("Total execution time: " + (endTime - startTime) + " milliseconds");
+        return time - totalWaysToLose;
     }
 
     static class Race {
