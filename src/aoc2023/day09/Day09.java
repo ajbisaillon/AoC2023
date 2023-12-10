@@ -40,7 +40,27 @@ public class Day09 extends Day {
 
     @Override
     public Object partTwo(Stream<String> lines) {
-        return null;
+        List<List<Long>> allHistoryEntries = lines
+                .map(line -> Arrays.stream(line.split(" "))
+                        .map(Long::parseLong).toList()
+                ).toList();
+
+        long predictionsTotal = 0L;
+        for (List<Long> entries : allHistoryEntries) {
+            List<Long> firstValues = new ArrayList<>();
+            firstValues.add(entries.get(0));
+
+            while (!isZeroedOut(entries)) {
+                entries = calculateNextSequence(entries);
+                firstValues.add(entries.get(0));
+            }
+
+            firstValues.remove(firstValues.size() - 1);
+            Collections.reverse(firstValues);
+            Long prediction = firstValues.stream().reduce(0L, (total, current) -> current - total);
+            predictionsTotal += prediction;
+        }
+        return predictionsTotal;
     }
 
     List<Long> calculateNextSequence(List<Long> sequence) {
