@@ -1,8 +1,8 @@
 package aoc2023.day03;
 
-import aoc2023.Cell;
+import aoc2023.datastructures.Cell;
 import aoc2023.Day;
-import aoc2023.Grid;
+import aoc2023.datastructures.Grid;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public class Day03 extends Day {
             boolean symbolFound = false;
             for (int j = 0; j < grid.getNumberOfColumns(); j++) {
                 Cell cell = grid.getCell(i, j);
-                String cellContent = cell.getValue();
+                String cellContent = cell.value;
 
                 if (Character.isDigit(cellContent.charAt(0))) {
                     numberBuffer.append(cellContent);
@@ -71,7 +71,7 @@ public class Day03 extends Day {
             Cell end = null;
             for (int j = 0; j < grid.getNumberOfColumns(); j++) {
                 final Cell cell = grid.getCell(i, j);
-                final String cellContent = cell.getValue();
+                final String cellContent = cell.value;
                 boolean isDigit = Character.isDigit(cellContent.charAt(0));
                 if (isDigit) {
                     buffer.append(cellContent);

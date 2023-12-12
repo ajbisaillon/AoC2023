@@ -1,4 +1,4 @@
-package aoc2023;
+package aoc2023.datastructures;
 
 public class Node {
     final public String value;

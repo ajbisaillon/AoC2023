@@ -1,7 +1,7 @@
 package aoc2023.day08;
 
 import aoc2023.Day;
-import aoc2023.Node;
+import aoc2023.datastructures.Node;
 
 import java.util.*;
 import java.util.regex.Matcher;

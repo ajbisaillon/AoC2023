@@ -1,6 +1,6 @@
 package aoc2023.day03;
 
-import aoc2023.Cell;
+import aoc2023.datastructures.Cell;
 
 public class PartNumber {
     final public int mValue;
