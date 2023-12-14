@@ -3,8 +3,8 @@ package aoc2023.datastructures;
 import java.util.Objects;
 
 public class Cell<T> {
-    final public int i;
-    final public int j;
+    public int i;
+    public int j;
 
     final public String value;
 
@@ -21,10 +21,18 @@ public class Cell<T> {
         this.extra = extra;
     }
 
+//    @Override
+//    public String toString() {
+//        return value + "@(" + i + "," + j + ") [" + extra + "]";
+//    }
     @Override
     public String toString() {
-        return value + "@(" + i + "," + j + ") [" + extra + "]";
+        return value;
     }
+//    @Override
+//    public String toString() {
+//        return i + "," + j;
+//    }
 
     @Override
     public boolean equals(Object o) {

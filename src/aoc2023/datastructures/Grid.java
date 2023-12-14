@@ -34,9 +34,65 @@ public class Grid<T> {
         for (int j = 0; j < row.size(); j++) {
             cells.add(new Cell<>(nextRow, j, row.get(j)));
         }
-
         grid.add(cells);
+    }
 
+    public void addRow(List<String> row, int insertAtIndex) {
+        // insert the new row into the grid, then update i,j of cells in following rows
+
+        List<Cell<T>> cells = new ArrayList<>();
+        for (int j = 0; j < row.size(); j++) {
+            cells.add(new Cell<>(insertAtIndex, j, row.get(j)));
+        }
+        grid.add(insertAtIndex, cells);
+
+        for (int i = insertAtIndex + 1; i < this.getNumberOfRows(); i++) {
+            for (int j = 0; j < this.getNumberOfColumns(); j++) {
+                Cell cell = this.getCell(i, j);
+                cell.i = cell.i + 1;
+            }
+        }
+    }
+
+    public void addRowAndFill(int insertAtIndex, String fillWith) {
+        List<Cell<T>> cells = new ArrayList<>();
+        for (int j = 0; j < this.getNumberOfColumns(); j++) {
+            cells.add(new Cell<>(insertAtIndex, j, fillWith));
+        }
+        grid.add(insertAtIndex, cells);
+
+        for (int i = insertAtIndex + 1; i < this.getNumberOfRows(); i++) {
+            for (int j = 0; j < this.getNumberOfColumns(); j++) {
+                Cell<T> cell = this.getCell(i, j);
+                cell.i = cell.i + 1;
+            }
+        }
+    }
+
+    public void addColumn(List<String> column, int insertAtIndex) {
+        for (int i = 0; i < this.getNumberOfColumns(); i++) {
+            grid.get(i).add(insertAtIndex, new Cell<>(i, insertAtIndex, column.get(i)));
+        }
+
+        for (int i = 0; i < this.getNumberOfRows(); i++) {
+            for (int j = insertAtIndex + 1; j < this.getNumberOfColumns(); j++) {
+                Cell<T> cell = this.getCell(i, j);
+                cell.j = cell.j + 1;
+            }
+        }
+    }
+
+    public void addColumnAndFill(int insertAtIndex, String fillWith) {
+        for (int i = 0; i < this.getNumberOfRows(); i++) {
+            grid.get(i).add(insertAtIndex, new Cell<>(i, insertAtIndex, fillWith));
+        }
+
+        for (int i = 0; i < this.getNumberOfRows(); i++) {
+            for (int j = insertAtIndex + 1; j < this.getNumberOfColumns(); j++) {
+                Cell<T> cell = this.getCell(i, j);
+                cell.j = cell.j + 1;
+            }
+        }
     }
 
     public List<Cell<T>> getRow(int index) {
