@@ -5,7 +5,9 @@ import aoc2023.datastructures.Cell;
 import aoc2023.datastructures.Grid;
 import aoc2023.datastructures.Tuple3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class Day10 extends Day {
@@ -19,7 +21,6 @@ public class Day10 extends Day {
 
         Tuple3<Cell<Integer>, Pipe, Pipe> startingPositions = getStartingPositions(grid);
 
-        Cell<Integer> startingPosition = startingPositions.first;
         Pipe pathOneStart = startingPositions.second;
         Pipe pathTwoStart = startingPositions.third;
 
@@ -29,7 +30,7 @@ public class Day10 extends Day {
         Pipe pathOneCurrent = pathOneStart;
         Pipe pathTwoCurrent = pathTwoStart;
 
-        Pipe pathOneNext = getNext(grid,pathOneCurrent);
+        Pipe pathOneNext = getNext(grid, pathOneCurrent);
         Pipe pathTwoNext = getNext(grid, pathTwoCurrent);
 
         if (pathOneNext == null || pathTwoNext == null) {
@@ -60,13 +61,49 @@ public class Day10 extends Day {
     @Override
     public Object partTwo(Stream<String> lines) {
         Grid grid = populateGrid(lines);
-        return null;
+
+        Tuple3<Cell<Integer>, Pipe, Pipe> startingPositions = getStartingPositions(grid);
+
+        List<Pipe> vertices = new ArrayList<>();
+        List<Pipe> boundaryPoints = new ArrayList<>();
+        vertices.add(new Pipe(startingPositions.first, null));
+        boundaryPoints.add(new Pipe(startingPositions.first, null));
+        Pipe current = startingPositions.second;
+        while (getNext(grid, current) != null) {
+            if (isBend(current)) {
+                vertices.add(current);
+            }
+            boundaryPoints.add(current);
+            current = getNext(grid, current);
+        }
+        if (isBend(current)) {
+            vertices.add(current);
+        }
+        boundaryPoints.add(current);
+
+        int acc = 0;
+        for (int i = 0; i < vertices.size(); i++) {
+            acc += calculateDeterminant(vertices.get(i), vertices.get((i + 1) % vertices.size()));
+        }
+
+        int area = Math.abs(acc) / 2;
+
+
+
+        return (area - (boundaryPoints.size() / 2)) + 1;
     }
 
     private Grid<Integer> populateGrid(Stream<String> lines) {
         Grid<Integer> grid = new Grid<>();
         lines.map(line -> Arrays.stream(line.split("")).toList()).forEach(grid::addRow);
         return grid;
+    }
+
+    private boolean isBend(Pipe pipe) {
+        return switch (pipe.cell.value) {
+            case "7", "J", "L", "F" -> true;
+            default -> false;
+        };
     }
 
     Tuple3<Cell<Integer>, Pipe, Pipe> getStartingPositions(Grid<Integer> grid) {
@@ -191,7 +228,7 @@ public class Day10 extends Day {
             case NORTH -> {
                 cell = grid.getCell(pipe.cell.i - 1, pipe.cell.j);
                 return switch (cell.value) {
-                    case "|" ->  new Pipe(cell, Direction.NORTH);
+                    case "|" -> new Pipe(cell, Direction.NORTH);
                     case "7" -> new Pipe(cell, Direction.WEST);
                     case "F" -> new Pipe(cell, Direction.EAST);
                     default -> null;
@@ -227,6 +264,12 @@ public class Day10 extends Day {
         }
 
         return null;
+    }
+
+    int calculateDeterminant(Pipe first, Pipe second) {
+//        System.out.printf("%s %s\n%s %s\n---\n", first.cell.i, second.cell.i, first.cell.j, second.cell.j);
+        int result = (first.cell.i * second.cell.j) - (second.cell.i * first.cell.j);
+        return result;
     }
 
 
