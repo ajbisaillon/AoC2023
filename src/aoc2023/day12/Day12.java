@@ -3,12 +3,14 @@ package aoc2023.day12;
 import aoc2023.Day;
 import aoc2023.datastructures.Tuple2;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class Day12 extends Day {
+    private final HashMap<Tuple2<String, List<Integer>>, Long> cache = new HashMap<>();
+
     public Day12() {
         super("src/aoc2023/Day12/input.txt");
     }
@@ -16,110 +18,71 @@ public class Day12 extends Day {
     @Override
     public Object partOne(Stream<String> lines) {
         return lines.map(line -> line.split(" ")).map(parts -> new Tuple2<>(
-                parts[0],
-                Arrays.stream(parts[1].split(",")).map(Integer::parseInt).toList()))
-                .map(record -> {
-                    // find the indices of the unknowns
-                    List<Integer> unknownIndices = getIndicesOfUnknowns(record.first, "?");
-                    // try every combination for those unknown positions
-                    // and check whether it's a valid combination based on the numbers given
-                    return tryAllCombinations(record.first, unknownIndices, record.second);
-                }).reduce(0, Integer::sum);
+                        parts[0] + ".",
+                        Arrays.stream(parts[1].split(",")).map(Integer::parseInt).toList()))
+                .map(record -> countArrangements(record.first, 0, record.second)).reduce(0L, Long::sum);
     }
 
     @Override
     public Object partTwo(Stream<String> lines) {
-        return lines.map(line -> line.split(" ")).map(parts -> new Tuple2<>(
-                        parts[0],
-                        Arrays.stream(parts[1].split(",")).map(Integer::parseInt).toList()))
-                .map(record -> {
-                    // find the indices of the unknowns
-                    List<Integer> unknownIndices = getIndicesOfUnknowns(record.first, "?");
-                    // try every combination for those unknown positions
-                    // and check whether it's a valid combination based on the numbers given
-                    return tryAllCombinations(record.first, unknownIndices, record.second);
-                }).reduce(0, Integer::sum);
+        this.cache.clear();
+        return lines.map(line -> line.split(" ")).map(parts -> {
+                    String input = parts[0] + "?";
+                    String groups = parts[1] + ",";
+                    String repeatedInput = input.repeat(4) + parts[0] + ".";
+                    String repeatedGroups = groups.repeat(5);
+                    return new Tuple2<>(
+                            repeatedInput,
+                            Arrays.stream(repeatedGroups.split(",")).map(Integer::parseInt).toList());
+                })
+                .map(record -> countArrangements(record.first, 0, record.second)).reduce(0L, Long::sum);
     }
 
 
-    List<List<String>> getAllCombinations(Integer numberOfUnknowns) {
-        List<List<String>> allCombinations = new ArrayList<>();
-        for (long i = 0; i < (1L << numberOfUnknowns); i++) {
-            List<String> combination = new ArrayList<>();
-            for (int j = 0; j < numberOfUnknowns; j++) {
-                if ((i >> j) % 2 == 1) {
-                    combination.add(".");
-                } else {
-                    combination.add("#");
-                }
-            }
-            allCombinations.add(combination);
+    long countArrangements(String input, int runLength, List<Integer> groups) {
+        Tuple2<String, List<Integer>> state = new Tuple2<>(input, groups);
+
+        if (runLength == 0 && cache.containsKey(state)) {
+            return cache.get(state);
         }
-        return allCombinations;
-    }
 
-    List<Integer> getIndicesOfUnknowns(String line, String unknownSymbol) {
-        List<Integer> indices = new ArrayList<>();
-        int index = line.indexOf(unknownSymbol);
-        while (index >= 0) {
-            indices.add(index);
-            index = line.indexOf(unknownSymbol, index + 1);
-        }
-        return indices;
-    }
-
-    boolean isCombinationValid(String springsPossibility, List<Integer> groupSizes) {
-        int runLength = 0;
-        int groupSizeIndex = 0;
-        int stringIndex = 0;
-        while (stringIndex < springsPossibility.length()) {
-            if (springsPossibility.charAt(stringIndex) == '#') {
-                runLength++;
+        if (input.isBlank()) {
+            if (groups.isEmpty()) {
+                return 1;
             } else {
-                if (runLength == groupSizes.get(groupSizeIndex)) {
-                    groupSizeIndex++;
-                    runLength = 0;
-                } else if (runLength != 0) {
-                    return false;
-                }
+                return 0;
+            }
+        }
 
+        char current = input.charAt(0);
+        long arrangements = 0;
+        if (current == '?') {
+            arrangements = countArrangements("." + input.substring(1), runLength, groups)
+                    + countArrangements("#" + input.substring(1), runLength, groups);
+        } else if (current == '#') {
+            if (groups.isEmpty()) {
+                arrangements = 0;
+            } else {
+                arrangements = countArrangements(input.substring(1), runLength + 1, groups);
             }
-            stringIndex++;
-            if (groupSizeIndex >= groupSizes.size()) {
-                break;
+        } else {
+            if (!groups.isEmpty() && runLength == groups.get(0)) {
+                List<Integer> newGroups = groups.subList(1, groups.size());
+                arrangements = countArrangements(input.substring(1), 0, newGroups);
+            } else if (runLength == 0) {
+                arrangements = countArrangements(input.substring(1), runLength, groups);
+            } else {
+                arrangements = 0;
             }
         }
-        if (groupSizeIndex < groupSizes.size() && runLength == groupSizes.get(groupSizeIndex)) {
-            groupSizeIndex++;
+
+        // only cache solution if not in the middle of a run
+        if (runLength == 0) {
+            cache.put(state, arrangements);
         }
-        if (groupSizeIndex != groupSizes.size()) {
-            return false;
-        }
-        return springsPossibility.indexOf("#", stringIndex) == -1;
+        return arrangements;
     }
 
-    Integer tryAllCombinations(String record, List<Integer> unknownIndices, List<Integer> groupSizes) {
-        int validCombinations = 0;
-        boolean valid = false;
-        List<List<String>> allCombinations = getAllCombinations(unknownIndices.size());
-
-        for (List<String> combination : allCombinations) {
-            int unknown = 0;
-            StringBuilder substitutedRecord = new StringBuilder(record);
-            for (String springValue : combination) {
-                substitutedRecord.setCharAt(unknownIndices.get(unknown++), springValue.charAt(0));
-            }
-
-            String str = substitutedRecord.toString();
-            valid = isCombinationValid(str, groupSizes);
-            if (valid) {
-                validCombinations++;
-            }
-        }
-
-        System.out.println(record + " " + validCombinations);
-        return validCombinations;
-    }
 }
 
 
