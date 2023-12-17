@@ -73,6 +73,6 @@ public class Day09 extends Day {
     }
 
     boolean isZeroedOut(List<Long> sequence) {
-        return sequence.stream().reduce(Long::sum).orElse(0L) == 0;
+        return sequence.stream().allMatch(x -> x == 0L);
     }
 }
