@@ -22,7 +22,7 @@ public class Day13 extends Day {
         Grid<String> current = new Grid<>();
         for (String line : allLines) {
             if (line.isBlank()) {
-                totalColumns += countSymmetry(current);
+                totalColumns += countSymmetry(current, false);
                 current = new Grid<>();
             } else {
                 current.addRow(Arrays.stream(line.split("")).toList());
@@ -41,7 +41,7 @@ public class Day13 extends Day {
         Grid<String> current = new Grid<>();
         for (String line : allLines) {
             if (line.isBlank()) {
-                totalColumns += countSymmetry(current);
+                totalColumns += countSymmetry(current, true);
                 current = new Grid<>();
             } else {
                 current.addRow(Arrays.stream(line.split("")).toList());
@@ -51,17 +51,18 @@ public class Day13 extends Day {
         return totalColumns;
     }
 
-    private int countSymmetry(Grid<String> grid) {
-        int rowResult = countHorizontalReflectionRows(grid);
-        int colResult = countVerticalReflectionColumns(grid);
+    private int countSymmetry(Grid<String> grid, boolean accountForFlipped) {
+        int rowResult = countHorizontalReflectionRows(grid, accountForFlipped);
+        int colResult = countVerticalReflectionColumns(grid, accountForFlipped);
         return rowResult + colResult;
     }
 
-    int countHorizontalReflectionRows(Grid<String> grid) {
+    int countHorizontalReflectionRows(Grid<String> grid, boolean accountForFlipped) {
         int result = 0;
         for (int i = 0; i < grid.getNumberOfRows() - 1; i++) {
             int differences = grid.getNumberOfDifferencesInRow(i, i + 1);
-            if (differences == 0 || differences == 1) {
+            boolean cond = (accountForFlipped && (differences == 0 || differences ==1)) || (!accountForFlipped && differences == 0);
+            if (cond) {
                 int start = i + 1;
                 int top = i;
                 int bottom = i + 1;
@@ -78,14 +79,13 @@ public class Day13 extends Day {
                         finished = true;
                     } else {
                         areRowsEqual = grid.areRowValuesEqual(top, bottom);
-                        if (!flippedFound && !areRowsEqual) {
+                        if (accountForFlipped && (!flippedFound && !areRowsEqual)) {
                             areRowsEqual = grid.getNumberOfDifferencesInRow(top, bottom) == 1;
                             flippedFound = grid.getNumberOfDifferencesInRow(top, bottom) == 1;
-                            System.out.printf("top: %s, bottom: %s are off by one\n", top, bottom);
                         }
                     }
                 }
-                if (finished && flippedFound) {
+                if ((finished && flippedFound) || (finished && !accountForFlipped)) {
                     break;
                 } else {
                     result = 0;
@@ -95,11 +95,12 @@ public class Day13 extends Day {
         return result * 100;
     }
 
-    int countVerticalReflectionColumns(Grid<String> grid) {
+    int countVerticalReflectionColumns(Grid<String> grid, boolean accountForFlipped) {
         int result = 0;
         for (int i = 0; i < grid.getNumberOfColumns() - 1; i++) {
             int differences = grid.getNumberOfDifferencesInColumn(i, i + 1);
-            if (differences == 0 || differences == 1) {
+            boolean cond = (accountForFlipped && (differences == 0 || differences ==1)) || (!accountForFlipped && differences == 0);
+            if (cond) {
                 int start = i + 1; // need number of columns
                 int left = i;
                 int right = i + 1;
@@ -116,13 +117,13 @@ public class Day13 extends Day {
                         finished = true;
                     } else {
                         areColumnsEqual = grid.areColumnValuesEqual(left, right);
-                        if (!flippedFound && !areColumnsEqual) {
+                        if (accountForFlipped && (!flippedFound && !areColumnsEqual)) {
                             areColumnsEqual = grid.getNumberOfDifferencesInColumn(left, right) == 1;
                             flippedFound = grid.getNumberOfDifferencesInColumn(left, right) == 1;
                         }
                     }
                 }
-                if (finished && flippedFound) {
+                if ((finished && flippedFound) || (finished && !accountForFlipped)) {
                     break;
                 } else {
                     result = 0;
