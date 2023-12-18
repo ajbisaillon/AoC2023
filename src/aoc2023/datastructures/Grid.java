@@ -99,6 +99,40 @@ public class Grid<T> {
         return grid.get(index);
     }
 
+    public List<Cell<T>> getColumn(int index) {
+        final List<Cell<T>> column = new ArrayList<>();
+        for (List<Cell<T>> row : grid) {
+            column.add(row.get(index));
+        }
+        return column;
+    }
+
+    public boolean areRowValuesEqual(int first, int second) {
+        List<Cell<T>> firstRow = getRow(first);
+        List<Cell<T>> secondRow = getRow(second);
+
+        if (firstRow.size() != secondRow.size()) return false;
+
+        for (int i = 0; i < firstRow.size(); i++) {
+            if (!firstRow.get(i).value.equals(secondRow.get(i).value)) return false;
+        }
+
+        return true;
+    }
+
+    public boolean areColumnValuesEqual(int first, int second) {
+        List<Cell<T>> firstColumn = getColumn(first);
+        List<Cell<T>> secondColumn = getColumn(second);
+
+        if (firstColumn.size() != secondColumn.size()) return false;
+
+        for (int i = 0; i < firstColumn.size(); i++) {
+            if (!firstColumn.get(i).value.equals(secondColumn.get(i).value)) return false;
+        }
+
+        return true;
+    }
+
     public Cell<T> findFirst(String value) {
         for (List<Cell<T>> rows : grid) {
             for (Cell<T> cell : rows) {
