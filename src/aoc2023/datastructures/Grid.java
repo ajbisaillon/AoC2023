@@ -133,6 +133,34 @@ public class Grid<T> {
         return true;
     }
 
+    public Integer getNumberOfDifferencesInRow(int first, int second) {
+        int differences = 0;
+        List<Cell<T>> firstRow = getRow(first);
+        List<Cell<T>> secondRow = getRow(second);
+
+        if (firstRow.size() != secondRow.size()) return null;
+
+        for (int i = 0; i < firstRow.size(); i++) {
+            if (!firstRow.get(i).value.equals(secondRow.get(i).value)) differences++;
+        }
+
+        return differences;
+    }
+
+    public Integer getNumberOfDifferencesInColumn(int first, int second) {
+        int differences = 0;
+        List<Cell<T>> firstColumn = getColumn(first);
+        List<Cell<T>> secondColumn = getColumn(second);
+
+        if (firstColumn.size() != secondColumn.size()) return null;
+
+        for (int i = 0; i < firstColumn.size(); i++) {
+            if (!firstColumn.get(i).value.equals(secondColumn.get(i).value)) differences++;
+        }
+
+        return differences;
+    }
+
     public Cell<T> findFirst(String value) {
         for (List<Cell<T>> rows : grid) {
             for (Cell<T> cell : rows) {
