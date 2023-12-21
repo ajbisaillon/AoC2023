@@ -95,6 +95,13 @@ public class Grid<T> {
         }
     }
 
+    public void fillColumnRange(int colIndex, int rowStart, int rowEnd, String fillWith) {
+        for (int i = rowStart; i < rowEnd; i++) {
+            Cell<T> cell = this.getCell(i, colIndex);
+            cell.value = fillWith;
+        }
+    }
+
     public List<Cell<T>> getRow(int index) {
         return grid.get(index);
     }

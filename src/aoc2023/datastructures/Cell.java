@@ -6,7 +6,7 @@ public class Cell<T> {
     public int i;
     public int j;
 
-    final public String value;
+    public String value;
 
     public T extra;
 
