@@ -1,9 +1,6 @@
 package aoc2023.datastructures;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * All rows are the same length
@@ -92,6 +89,14 @@ public class Grid<T> {
                 Cell<T> cell = this.getCell(i, j);
                 cell.j = cell.j + 1;
             }
+        }
+    }
+
+    public void fillRowRange(int rowIndex, int colStart, int colEnd, String fillWith) {
+        List<Cell<T>> row = getRow(rowIndex);
+        for (int i = colStart; i < colEnd; i++) {
+            Cell<T> cell = row.get(i);
+            cell.value = fillWith;
         }
     }
 
@@ -208,5 +213,17 @@ public class Grid<T> {
             System.out.println();
 
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Grid<?> grid1)) return false;
+        return grid.equals(grid1.grid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(grid);
     }
 }
